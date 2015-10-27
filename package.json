@@ -1,0 +1,9 @@
+{ "name" : "DRTM-Brandmeister"
+, "version" : "1.0.0"
+, "dependencies" : { "csvtojson": ""
+, "request": ""
+, "path": ""
+, "sqlite3": ""
+, "mqtt": ""}
+}
+
