@@ -1,4 +1,6 @@
 var mqtt = require('mqtt');
+var path = require('path');
+var config = require(path.resolve(__dirname, 'config.json'));
 
 //Import users 
 var Converter = require("csvtojson").Converter;
@@ -7,11 +9,11 @@ var user = {}
 
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('../DRTM-Backend/repeater.db');
+var db = new sqlite3.Database(config.repeater_db);
 var users = new sqlite3.Database(':memory:');
 
-var wsClient = mqtt.connect('wss://tracker.dstar.su:443/master')
-var RTM  = mqtt.connect('mqtt://localhost');
+var wsClient = mqtt.connect(config.brandmeister_mqtt)
+var RTM  = mqtt.connect('mqtt://'+config.mqtt_host+':'+config.mqtt_port);
 
 //Create memory db for users
 users.serialize(function() {
