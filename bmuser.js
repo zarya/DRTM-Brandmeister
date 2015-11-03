@@ -87,13 +87,17 @@ wsClient.on('message', function(source, payload) {
         'Route:          ' + values['Route'] + '\n';
       console.log(content);
 
-      //Send the data to MQTT
-      var now = new Date();
-      now = Math.floor(now / 1000);
-      RTM.publish("hytera/"+row.IP+"/usrTs"+values['Slot'], user['Call'] + ' ('+user['Name'] + ')')
-      RTM.publish("hytera/"+row.IP+"/tlkTs"+values['Slot'], values['DestinationID'].toString())
-      RTM.publish("hytera/"+row.IP+"/lastTs"+values['Slot'], now.toString())
-
+      if (types[values['LinkType']] == "Repeater" 
+            && values['DestinationID'] != 5057 
+            && user['Name'] != undefined
+            && values['Route'] == undefined) {
+        //Send the data to MQTT
+        var now = new Date();
+        now = Math.floor(now / 1000);
+        RTM.publish("hytera/"+row.IP+"/usrTs"+values['Slot'], user['Call'] + ' ('+user['Name'] + ')')
+        RTM.publish("hytera/"+row.IP+"/tlkTs"+values['Slot'], values['DestinationID'].toString())
+        RTM.publish("hytera/"+row.IP+"/lastTs"+values['Slot'], now.toString())
+      }
     });
   }
 });
