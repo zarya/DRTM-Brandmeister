@@ -7,7 +7,6 @@ var Converter = require("csvtojson").Converter;
 var converter = new Converter({constructResult:false,delimiter:';'}); //for big csv data 
 var user = {}
 
-
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(config.repeater_db);
 var users = new sqlite3.Database(':memory:');
@@ -88,7 +87,6 @@ wsClient.on('message', function(source, payload) {
           'Repeater:       ' + row.Call + '(' + row.IP + ')\n' +
           'Slot:           ' + values['Slot'] + '\n' +
           'Route:          ' + values['Route'] + '\n';
-        console.log(content);
 
         if (types[values['LinkType']] == "Repeater" 
               && values['DestinationID'] != 5057 
