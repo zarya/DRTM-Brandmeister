@@ -70,34 +70,38 @@ wsClient.on('message', function(source, payload) {
       // Fetch the user 
       var sql = "SELECT Call,Name FROM Users WHERE ID = '"+values['SourceID']+"'";
       users.all(sql, function(err, rows) {
-        user = rows[0];
+        if (rows[0]) 
+          user = rows[0];
+        else {
+          user = {'Call': '','Name':''}
+        }
+
+        var content =
+          'Server ID:      ' + source + '\n' +
+          'Event:          ' + values['Event'] + '\n' +
+          'Call Type:      ' + attributes.join(' ') + '\n' +
+          'Source ID:      ' + values['SourceID'] + ' ' + user['Call'] + ' ' + user['Name'] +'\n' +
+          'Destination ID: ' + values['DestinationID'] + '\n' +
+          'Link Type:      ' + types[values['LinkType']] + '\n' +
+          'Link Name:      ' + values['LinkName'] + '\n' +
+          'Link ID:        ' + values['ContextID'] + '\n' +
+          'Repeater:       ' + row.Call + '(' + row.IP + ')\n' +
+          'Slot:           ' + values['Slot'] + '\n' +
+          'Route:          ' + values['Route'] + '\n';
+        console.log(content);
+
+        if (types[values['LinkType']] == "Repeater" 
+              && values['DestinationID'] != 5057 
+              && user['Name'] != undefined
+              && values['Route'] == undefined) {
+          //Send the data to MQTT
+          var now = new Date();
+          now = Math.floor(now / 1000);
+          RTM.publish("hytera/"+row.IP+"/usrTs"+values['Slot'], user['Call'] + ' ('+user['Name'] + ')')
+          RTM.publish("hytera/"+row.IP+"/tlkTs"+values['Slot'], values['DestinationID'].toString())
+          RTM.publish("hytera/"+row.IP+"/lastTs"+values['Slot'], now.toString())
+        }
       });
-
-      var content =
-        'Server ID:      ' + source + '\n' +
-        'Event:          ' + values['Event'] + '\n' +
-        'Call Type:      ' + attributes.join(' ') + '\n' +
-        'Source ID:      ' + values['SourceID'] + ' ' + user['Call'] + ' ' + user['Name'] +'\n' +
-        'Destination ID: ' + values['DestinationID'] + '\n' +
-        'Link Type:      ' + types[values['LinkType']] + '\n' +
-        'Link Name:      ' + values['LinkName'] + '\n' +
-        'Link ID:        ' + values['ContextID'] + '\n' +
-        'Repeater:       ' + row.Call + '(' + row.IP + ')\n' +
-        'Slot:           ' + values['Slot'] + '\n' +
-        'Route:          ' + values['Route'] + '\n';
-      console.log(content);
-
-      if (types[values['LinkType']] == "Repeater" 
-            && values['DestinationID'] != 5057 
-            && user['Name'] != undefined
-            && values['Route'] == undefined) {
-        //Send the data to MQTT
-        var now = new Date();
-        now = Math.floor(now / 1000);
-        RTM.publish("hytera/"+row.IP+"/usrTs"+values['Slot'], user['Call'] + ' ('+user['Name'] + ')')
-        RTM.publish("hytera/"+row.IP+"/tlkTs"+values['Slot'], values['DestinationID'].toString())
-        RTM.publish("hytera/"+row.IP+"/lastTs"+values['Slot'], now.toString())
-      }
     });
   }
 });
