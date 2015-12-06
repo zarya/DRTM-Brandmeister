@@ -70,10 +70,10 @@ wsClient.on('message', function(source, payload) {
       // Fetch the user 
       var sql = "SELECT Call,Name FROM Users WHERE ID = '"+values['SourceID']+"'";
       users.all(sql, function(err, rows) {
-        if (rows[0]) 
+        if (rows[0]['Call']) 
           user = rows[0];
         else {
-          user = {'Call': '','Name':''}
+          user = {'Call': '', 'Name':''};
         }
 
         var content =
